@@ -3,6 +3,7 @@ import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'r
 import { useGetAccountsQuery } from '../../server/accountsApi';
 import { useGetCategoriesQuery } from '../../server/categoriesApi';
 import { useGetTransactionsQuery } from '../../server/transactionsApi';
+import { Account, Category, Transaction } from '../../server/types';
 
 export default function TransactionsScreen() {
   const { data: transactionsData, isLoading } = useGetTransactionsQuery({});
@@ -25,30 +26,32 @@ export default function TransactionsScreen() {
   }, [transactionsData, searchQuery, filterType, filterCategory]);
 
   const getAccountName = (accountId: number) => {
-    const account = accounts?.find((acc: any) => acc.id === accountId);
+    const account = accounts?.find((acc: Account) => acc.id === accountId);
     return account?.name || `Account ${accountId}`;
   };
 
   const getCategoryName = (categoryId: number) => {
-    const category = categories?.find((cat: any) => cat.id === categoryId);
+    const category = categories?.find((cat: Category) => cat.id === categoryId);
     return category?.name || `Category ${categoryId}`;
   };
 
-  const renderTransaction = ({ item }: { item: any }) => (
+  const renderTransaction = ({ item }: { item: Transaction }) => (
     <View style={styles.transactionCard}>
       <View style={styles.transactionHeader}>
         <View style={styles.transactionLeft}>
           <View style={[styles.typeIndicator, { backgroundColor: item.transaction_type === 'INCOME' ? '#10B981' : '#EF4444' }]} />
-          <View>
-            <Text style={styles.transactionDesc}>{item.description}</Text>
+          <View style={styles.transactionInfo}>
+            <Text style={styles.transactionDesc} numberOfLines={2} ellipsizeMode="tail">{item.description}</Text>
             <Text style={styles.transactionMeta}>
               {getAccountName(item.account_id)} • {getCategoryName(item.category_id)}
             </Text>
           </View>
         </View>
-        <Text style={[styles.transactionAmount, { color: item.transaction_type === 'INCOME' ? '#10B981' : '#EF4444' }]}>
-          {item.transaction_type === 'INCOME' ? '+' : '-'}KES {parseFloat(item.amount || '0').toFixed(2)}
-        </Text>
+        <View style={styles.amountContainer}>
+          <Text style={[styles.transactionAmount, { color: item.transaction_type === 'INCOME' ? '#10B981' : '#EF4444' }]}>
+            {item.transaction_type === 'INCOME' ? '+' : '-'}KES {parseFloat(item.amount || '0').toFixed(2)}
+          </Text>
+        </View>
       </View>
       <Text style={styles.transactionDate}>
         {new Date(item.transaction_date).toLocaleDateString('en-US', {
@@ -265,6 +268,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     flex: 1,
+    marginRight: 16,
+  },
+  transactionInfo: {
+    flex: 1,
+    marginRight: 12,
   },
   typeIndicator: {
     width: 4,
@@ -274,19 +282,28 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   transactionDesc: {
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '600',
     color: '#F8FAFC',
-    marginBottom: 6,
+    marginBottom: 4,
+    lineHeight: 20,
   },
-  transactionMeta: {
+  // --- Start of correct style definitions (Merged the best properties) ---
+  transactionMeta: { 
     fontSize: 14,
     color: '#94A3B8',
     fontWeight: '500',
+    marginBottom: 2,
+  },
+  amountContainer: {
+    alignItems: 'flex-end',
+    justifyContent: 'flex-start',
+    minWidth: 100,
   },
   transactionAmount: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 20, // Using the larger font size from the duplicate block
+    fontWeight: '800', // Using the heavier weight from the duplicate block
+    textAlign: 'right',
   },
   transactionDate: {
     fontSize: 12,
@@ -314,4 +331,5 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
     textAlign: 'center',
   },
+
 });

@@ -4,6 +4,7 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { useSelector } from 'react-redux';
 import { useGetAccountsQuery } from '../../server/accountsApi';
 import { useGetTransactionsQuery } from '../../server/transactionsApi';
+import { Transaction } from '../../server/types';
 import { RootState } from '../../store';
 
 export default function HomeScreen() {
@@ -14,7 +15,7 @@ export default function HomeScreen() {
 
   const totalBalance = accounts?.reduce((sum, account) => sum + parseFloat(account.current_balance || '0'), 0) || 0;
 
-  const renderTransaction = ({ item }: { item: any }) => (
+  const renderTransaction = ({ item }: { item: Transaction }) => (
     <View style={styles.transactionRow}>
       <View style={styles.transactionLeft}>
         <View style={styles.transactionIcon}>
@@ -56,23 +57,6 @@ export default function HomeScreen() {
           keyExtractor={(item) => item.id.toString()}
           style={styles.transactionsList}
         />
-      </View>
-
-      {/* Quick Actions */}
-      <View style={styles.quickActions}>
-        <TouchableOpacity style={styles.quickActionButton} onPress={() => router.push('/budgets')}>
-          <View style={[styles.quickActionIcon, { backgroundColor: '#F59E0B' }]}>
-            <Text style={styles.quickActionIconText}>📊</Text>
-          </View>
-          <Text style={styles.quickActionText}>Budgets</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.quickActionButton} onPress={() => router.push('/profile')}>
-          <View style={[styles.quickActionIcon, { backgroundColor: '#8B5CF6' }]}>
-            <Text style={styles.quickActionIconText}>👤</Text>
-          </View>
-          <Text style={styles.quickActionText}>Profile</Text>
-        </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.addButton} onPress={() => router.push('/add-transaction')}>
@@ -196,42 +180,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     textAlign: 'right',
-  },
-  quickActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginHorizontal: 20,
-    marginBottom: 20,
-  },
-  quickActionButton: {
-    alignItems: 'center',
-    backgroundColor: '#1E293B',
-    borderRadius: 16,
-    padding: 16,
-    width: 100,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: '#334155',
-  },
-  quickActionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  quickActionIconText: {
-    fontSize: 20,
-  },
-  quickActionText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#F8FAFC',
   },
   addButton: {
     position: 'absolute',

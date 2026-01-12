@@ -7,25 +7,8 @@ import { categoriesApi } from './server/categoriesApi';
 import { transactionsApi } from './server/transactionsApi';
 import { User } from './server/types';
 
-// Web-compatible storage
-const createWebStorage = () => {
-  if (typeof window !== 'undefined') {
-    return {
-      getItem: (key: string) => {
-        return Promise.resolve(localStorage.getItem(key));
-      },
-      setItem: (key: string, value: string) => {
-        return Promise.resolve(localStorage.setItem(key, value));
-      },
-      removeItem: (key: string) => {
-        return Promise.resolve(localStorage.removeItem(key));
-      },
-    };
-  }
-  return AsyncStorage;
-};
-
-const storage = createWebStorage();
+// Storage configuration for React Native (works on both mobile and web)
+const storage = AsyncStorage;
 
 interface AuthState {
   user: User | null;
